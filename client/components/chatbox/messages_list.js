@@ -1,9 +1,10 @@
 import React, { PureComponent } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
 import Message from "./message";
 import _ from "lodash";
-import { getAvatarName, getMessageTime, colorize, isEmpty } from "../../utils/messages";
+import { getAvatarName, getMessageTime, colorize } from "../../utils/messages";
 
 const MessagesWrapper = styled.div`
   overflow-y: scroll;
@@ -11,13 +12,22 @@ const MessagesWrapper = styled.div`
 `;
 
 class MessagesList extends PureComponent {
+  static propTypes = {
+    messages: PropTypes.array,
+    user: PropTypes.shape({
+      userName: PropTypes.string,
+      userId: PropTypes.string
+    }),
+    users: PropTypes.object.isRequired
+  };
+
   constructor(props) {
     super(props);
     this.messagesList = React.createRef();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.messages.length !== prevProps.messages.length) {
+  componentDidUpdate(prevProps) {
+    if (this.messagesList && this.props.messages.length !== prevProps.messages.length) {
       const node = this.messagesList.current;
       node.scrollTop = node.scrollHeight;
     }
@@ -32,30 +42,12 @@ class MessagesList extends PureComponent {
     const {
       messages,
       user: { userId },
-      users,
-      status: { isTyping }
+      users
     } = this.props;
 
-    let messagesList = messages;
-
-    //  If somebody is typing - add 'Typing' message to all messages
-    if (!isEmpty(isTyping)) {
-      const usersAreTyping = _.map(isTyping, (userIsTyping, userId) => {
-        return {
-          ...users[userId],
-          text: "Typing...",
-          isOwnMessage: false,
-          sentDate: Date.now(),
-          userId
-        };
-      });
-
-      messagesList = messagesList.concat(usersAreTyping);
-    }
-
     return (
-      <MessagesWrapper ref={this.messagesList} key="test">
-        {messagesList.map(message => {
+      <MessagesWrapper ref={this.messagesList} key="messages_list">
+        {messages.map(message => {
           return (
             <Message
               text={message.text}
@@ -83,8 +75,7 @@ function mapStateToProps(state) {
   return {
     messages: state.messages,
     user: state.user,
-    users: state.users,
-    status: state.status
+    users: state.users
   };
 }
 

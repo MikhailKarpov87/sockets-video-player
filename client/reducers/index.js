@@ -2,13 +2,15 @@ import { combineReducers } from "redux";
 import messages from "./messages";
 import user from "./user";
 import users from "./users";
-import status from "./status";
+import player from "./player";
+import error from "./error";
 
 const rootReducer = combineReducers({
   messages,
   user,
   users,
-  status
+  player,
+  error
 });
 
 export default rootReducer;

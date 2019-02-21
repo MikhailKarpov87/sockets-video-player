@@ -3,11 +3,35 @@ import { sendMessage } from "../socket";
 import { readFromLocalStorage, writeToLocalStorage, clearLocalStorage } from "../utils/auth";
 import * as t from "../constants";
 import jwt from "jsonwebtoken";
-import { API_URL } from "../constants";
+import { API_URL } from "../config";
+import { urlRegexp } from "../constants";
 
-//  Получаем JWT токен из localStorage и устанавливаем его
-//  в качестве default хедера для Axios запросов
+//  Getting JWT token from localStorage and setting it
+//  as default header in Axios requests
 axios.defaults.headers.common["x-access-token"] = readFromLocalStorage().token || null;
+
+export function videoSeek(position, seconds, seeking) {
+  const positionSeconds = Math.floor(seconds);
+  return { type: t.VIDEO_SEEK, payload: { position, positionSeconds, seeking } };
+}
+
+export function updateVideoInfo({ duration }) {
+  return { type: t.VIDEO_UPDATE_INFO, payload: { duration } };
+}
+
+export function updatePlayerURL(videoURL) {
+  return dispatch => {
+    if (videoURL.match(urlRegexp)) {
+      sendMessage(t.VIDEO_INPUT_SUBMIT, { videoURL });
+    } else {
+      dispatch(inputError("Wrong Video URL"));
+    }
+  };
+}
+
+export function inputError(message) {
+  return { type: t.INPUT_ERROR, payload: { message } };
+}
 
 function startLoading() {
   return { type: t.START_LOADING };
@@ -26,7 +50,7 @@ export function signIn() {
           .post(`${API_URL}/auth/google`, { token: googleToken })
           .then(response => {
             const token = response.data.token;
-            //  Получаем id пользователя из JWT токена
+            //  Getting user id from JWT token
             const userId = jwt.decode(token).id;
             dispatch(loginSuccess(token, googleToken, userName, userId));
           })
@@ -38,7 +62,7 @@ export function signIn() {
 
 export function loginSuccess(token, googleToken, userName, userId) {
   writeToLocalStorage(token, googleToken, userName, userId);
-  sendMessage("CHAT_USER_CONNECTED", { userId, userName });
+  sendMessage(t.CHAT_USER_CONNECTED, { userId, userName });
   axios.defaults.headers.common["x-access-token"] = token;
 
   return {

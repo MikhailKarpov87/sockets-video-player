@@ -1,39 +1,25 @@
-import React, { Component } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import ChatBox from "./components/chatbox";
-import Player from "./components/player";
 import { composeWithDevTools } from "redux-devtools-extension";
-import reducer from "./reducers";
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import thunk from "redux-thunk";
+import reducer from "./reducers";
 import { sendMessage, initSockets } from "./socket";
-import { Paper, Grid } from "@material-ui/core";
 import { jwt } from "./middlewares/jwt";
 import { readFromLocalStorage } from "./utils/auth";
 import { initGoogleAPI } from "./utils/auth";
-import Login from "./components/login";
-import { sampleMessages } from "./constants";
-
-const initialState = {
-  messages: sampleMessages,
-  user: {
-    userName: null,
-    userId: null,
-    token: null,
-    googleToken: null,
-    isAuth: false
-  },
-  users: {},
-  status: {
-    isTyping: {}
-  }
-};
+import Header from "./components/header";
+import { initialState } from "./config";
+import Main from "./components/main";
 
 //  Initializing Google API
 initGoogleAPI();
 
 let store;
+
+// Settings up store: with/without Redux DevTools
+// https://github.com/zalmoxisus/redux-devtools-extension
 if (
   process.env.NODE_ENV === "development" &&
   window.__REDUX_DEVTOOLS_EXTENSION__ &&
@@ -53,12 +39,12 @@ if (
 
 initSockets(store);
 
-//  Checking local storage for JWT token
-//  Dispatch AUTH_SUCCESS if found
+//  Checking local storage for JWT token and dispatching AUTH_SUCCESS action if token was found
 const userData = readFromLocalStorage();
 if (userData.token) {
   const { userId, userName } = userData;
 
+  //  Sending chat message: [name] connected..
   sendMessage("CHAT_USER_CONNECTED", { userId, userName });
 
   store.dispatch({
@@ -67,35 +53,13 @@ if (userData.token) {
   });
 }
 
-const styles = {
-  Paper: {
-    height: "80vh",
-    padding: "5vh 10vw"
-  },
-  GridContainer: {
-    justifyContent: "center"
-  }
+const App = props => {
+  return (
+    <Provider store={store}>
+      <Header />
+      <Main />
+    </Provider>
+  );
 };
-
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <Paper style={styles.Paper}>
-          <Login />
-          <Grid container style={styles.GridContainer}>
-            <Grid key="video" item>
-              <Player />
-            </Grid>
-
-            <Grid key="chatbox" item>
-              <ChatBox />
-            </Grid>
-          </Grid>
-        </Paper>
-      </Provider>
-    );
-  }
-}
 
 ReactDOM.render(<App />, document.getElementById("root"));

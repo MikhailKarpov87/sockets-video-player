@@ -11,6 +11,7 @@ const avatarColors = [
   "#009688"
 ];
 
+//  Function for generating 2-letter Avatar Name from User Name
 export function getAvatarName(userName) {
   return userName
     .split(" ")
@@ -18,6 +19,7 @@ export function getAvatarName(userName) {
     .slice(0, 2);
 }
 
+//  Function for generating color code based on userId
 export function colorize(userId) {
   let letters = userId.slice(0, 10).split("");
   let hash = letters

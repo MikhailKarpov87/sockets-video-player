@@ -2,6 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { signIn, signOut } from "../actions/";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import withStyles from "@material-ui/core/styles/withStyles";
+
+const LogInOutButton = withStyles({
+  root: {
+    margin: "0 10px"
+  }
+})(Button);
 
 class Login extends Component {
   static propTypes = {
@@ -17,22 +26,28 @@ class Login extends Component {
   };
 
   render() {
-    const { user, signOut, signIn } = this.props;
+    const { user, signOut, signIn, loginMessage } = this.props;
 
     return user.isAuth ? (
-      <div className="header-login">
-        <span>
-          Привет, <b>{user.userName}</b>!
-        </span>
-        <button onClick={signOut} className="login-button">
-          Выйти
-        </button>
-      </div>
+      <>
+        <Typography variant="body2" color="inherit">
+          Welcome, <b>{user.userName}</b>!
+        </Typography>
+
+        <LogInOutButton onClick={signOut} color="inherit" variant="text" size="small">
+          LOGOUT
+        </LogInOutButton>
+      </>
     ) : (
-      <div className="header-login">
-        <button onClick={signIn} className="login-button">
-          Войти
-        </button>
+      <div>
+        {loginMessage && (
+          <Typography variant="body2" color="error" align="center" inline>
+            {loginMessage}
+          </Typography>
+        )}
+        <Button onClick={signIn} color="inherit">
+          LOGIN
+        </Button>
       </div>
     );
   }

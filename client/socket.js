@@ -1,14 +1,14 @@
 import io from "socket.io-client";
+import { SOCKETS_API_URL } from "./config";
+import { messageTypes } from "./constants";
 
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect(SOCKETS_API_URL);
 
-const messageTypes = ["CHAT_MESSAGE", "CHAT_TYPING", "CHAT_FINISHED_TYPING", "CHAT_USER_CONNECTED"];
-
+//  Setting up listener fo each message type
 export const initSockets = store => {
   messageTypes.map(type =>
     socket.on(type, payload => {
       store.dispatch({ type, payload });
-      console.log(type + ":" + payload.userId);
     })
   );
 };

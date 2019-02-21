@@ -1,27 +1,26 @@
 import axios from "axios";
 import jsonwebtoken from "jsonwebtoken";
-import { API_URL } from "../constants";
+import { API_URL } from "../config";
 import { loginSuccess } from "../actions";
 import { readFromLocalStorage } from "../utils/auth";
 import * as t from "../constants";
 
-//  middleware для проверки и обновления JWT токена
+//  middleware for checking and updating JWT token
 export const jwt = store => next => action => {
-  //  Проверяем, что есть google токен и что загрузился объект window.gapi.auth2
+  // At first checking existense of Google Token and if object widnow.gapi.auth2 has been loaded
   const userData = readFromLocalStorage();
   if (userData.googleToken && window.gapi && window.gapi.hasOwnProperty("auth2")) {
-    //  Для передачи в функцию loginSuccess и записи в state нужны userName и googleToken
     const { userName, googleToken } = userData;
 
-    //  Берем из гугловского JWT значение exp и переводим в миллисекунды
+    //  Taking exp value from google JWT and transforming it to [ms]
     const googleExpire = jsonwebtoken.decode(googleToken).exp * 1000 || null;
     const now = new Date().getTime();
 
-    //  Создаем инстанс с методами Google API
+    //  Creating Google API instance with needed methods
     const GoogleAuth = window.gapi.auth2.getAuthInstance();
 
-    //  Проверяем что jwt.decode() вернул значение exp, сравниваем
-    //  Если токен expired, запрашиваем и сохраняем новый. Если нет - передаем вызов дальше: next(action)
+    //  Checking that jwt.decode() returned exp value and comparing it with previous exp
+    //  If token has been expired: requesting and saving new one. Otherwise dispatching call to next()
     //  https://developers.google.com/identity/sign-in/web/reference#googleuserreloadauthresponse
     return googleExpire && now > googleExpire
       ? GoogleAuth.currentUser
@@ -33,7 +32,7 @@ export const jwt = store => next => action => {
               .post(`${API_URL}/auth/google`, { token: googleToken })
               .then(response => {
                 const token = response.data.token;
-                //  Получаем id пользователя из JWT токена
+                //  Getting user id from JWT token
                 const userId = jsonwebtoken.decode(token).id;
                 store.dispatch(loginSuccess(token, googleToken, userName, userId));
                 next(action);

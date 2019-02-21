@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "client": "webpack-dev-server --mode=development",
-    "server": "node ./server",
-    "start": "node ./server | webpack-dev-server --mode=development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack-dev-server --mode=development",
+    "build": "webpack --mode=production",
+    "test": "jest",
+    "test-watch": "jest --watch"
   },
-  "author": "",
+  "author": "Mikhail Karpov",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -21,6 +21,7 @@
     "eslint-loader": "^2.1.1",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-react": "^7.12.4",
+    "jest": "^24.1.0",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14"
@@ -28,6 +29,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
+    "@material-ui/lab": "^3.0.0-alpha.30",
     "axios": "^0.18.0",
     "dotenv-webpack": "^1.7.0",
     "jsonwebtoken": "^8.4.0",
@@ -35,6 +37,7 @@
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-hot-loader": "^4.6.5",
+    "react-player": "^1.9.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "react-virtualized": "^9.21.0",

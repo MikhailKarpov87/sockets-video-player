@@ -10,11 +10,16 @@ module.exports = {
         test: /\.jsx?$/,
         include: [path.resolve(__dirname, "client")],
         loaders: "babel-loader"
+      },
+      {
+        test: /\.svg$/,
+        loader: "svg-inline-loader"
       }
     ]
   },
   devServer: {
     contentBase: "./dist",
-    port: 3000
+    port: 3000,
+    host: "localhost"
   }
 };

@@ -1,5 +1,8 @@
 import React, { memo } from "react";
-import { Avatar, Typography, Tooltip } from "@material-ui/core";
+import PropTypes from "prop-types";
+import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
+import Tooltip from "@material-ui/core/Tooltip";
 import styled from "styled-components";
 
 const styles = {
@@ -43,11 +46,20 @@ const Message = props => {
       <Tooltip title={userName + " at " + messageTime} key="avatar">
         <Avatar style={{ ...styles.Avatar, backgroundColor: avatarColor }}>{avatarName}</Avatar>
       </Tooltip>
-      <Typography variant="body2" style={{ fontWeight: "100", width: "100%" }} key="text">
+      <Typography variant="body2" style={{ fontWeight: "100" }} key="text">
         {text}
       </Typography>
     </MessageWrapper>
   );
+};
+
+Message.propTypes = {
+  text: PropTypes.string.isRequired,
+  messageTime: PropTypes.string.isRequired,
+  avatarColor: PropTypes.string.isRequired,
+  isOwnMessage: PropTypes.bool.isRequired,
+  userName: PropTypes.string.isRequired,
+  avatarName: PropTypes.string.isRequired
 };
 
 export default memo(Message);
