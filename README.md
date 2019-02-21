@@ -4,6 +4,8 @@
 
 Frontend part of web app for shared video watching with synchronized playback and chat. Backend is coming soon..
 
+[Demo](https://mikhailkarpov87.github.io/sockets-video-player/)
+
 Built with:
 
 - React
